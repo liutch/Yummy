@@ -10,4 +10,5 @@
 
 @interface MainSceneViewController : RefreshTableViewController<UITableViewDataSource,UITableViewDelegate>
 
+- (IBAction)onClickRightBtn:(id)sender;
 @end

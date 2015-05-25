@@ -13,12 +13,15 @@
 #import "UIImage+Blur.h"
 #import "CommonUtils.h"
 #import "TitleMarksOfClerk.h"
+#import "ClerkDetailInfoTableViewCell.h"
 
 @interface ClerkInfoViewController ()
 {
     NSMutableArray *data;
     NSString *totalMarksNumber;
     UILabel *label;
+    
+    float cellHeight;
 }
 
 @end
@@ -29,18 +32,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     data = [NSMutableArray arrayWithCapacity:0];
-    self.icon.image = [UIImage imageNamed:@"2.jpg"];
-    self.icon.layer.cornerRadius = 40;
-    self.icon.layer.masksToBounds = YES;
-    
-    [self makeDummy];
-    
-    UIImage *image = [UIImage imageNamed:@"2.jpg"];
-    self.backgroundImg.image = [image blurImageWithBlur:0.3 exclusionPath:nil];
     
     label = [[UILabel alloc] initWithFrame:CGRectMake(40, 75, self.view.frame.size.width-50, 0)];
     [label setNumberOfLines:0];
-    label.textColor = [UIColor whiteColor];
+    label.textColor = [UIColor redColor];
     label.font = [UIFont fontWithName:@"Arial" size:14.0f];
     label.text = @"阿斯顿福建拉设计的发送到了福建；撒娇的；法律按时；来得及发；阿拉斯加的链接发；老实交代；垃圾死了的激发了；时间地方就；阿斯顿记录阿里山的家里附近啊；" ;
     int height = [CommonUtils heightForLabel:label width:(self.view.frame.size.width-50)];
@@ -48,13 +43,8 @@
     CGRect frame = label.frame;
     frame.size.height = height;
     label.frame = frame;
-    [self.infoView addSubview:label];
     
-    NSLog(@" tableview frame %f",self.tableView.frame.size.height);
-    
-    self.infoConstraint.constant = label.frame.origin.y + label.frame.size.height + 10;
-    self.tableConstraint.constant = self.scrollView.frame.size.height;
-    
+    [self makeDummy];
 }
 
 - (void)makeDummy{
@@ -71,12 +61,8 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    NSLog(@" tableview frame %f",self.tableView.frame.size.height);
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width, self.tableView.frame.origin.y + self.tableView.frame.size.height );
-        NSLog(@" =------%f,%f,%f",self.scrollView.contentSize.height,self.tableView.frame.origin.y,self.tableView.frame.size.height);
-    });
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -85,7 +71,7 @@
 }
 
 - (IBAction)onClickRightBtn:(id)sender{
-    NSLog(@" ------%f",self.scrollView.contentSize.height);
+
 }
 
 /*
@@ -100,35 +86,81 @@
 
 #pragma mark -
 #pragma tableview delegate
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 2;
+}
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if (section==0) {
+        return 1;
+    }
     return data.count;
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *cellIdentifier = @"marks_cell";
-    MarkTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    
-    MarkData *mark = [data objectAtIndex:indexPath.row];
-    
-    cell.icon.image = mark.icon;
-    cell.name.text = mark.name;
-    cell.date.text = mark.date;
-    cell.words.text = mark.words;
-    cell.icon.layer.cornerRadius = 20;
-    cell.icon.layer.masksToBounds = YES;
-    
-    if(!cell)
-    {
-        @throw ([NSException exceptionWithName:@"CellIsNilException" reason:@"Cell is nil!" userInfo:nil]);
+    if (indexPath.section==0) {
+        static NSString *cellIdentifer = @"top_clerk_info_cell";
+        ClerkDetailInfoTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifer];
+        
+        cell.userIcon.image = [UIImage imageNamed:@"2.jpg"];
+        
+        UIImage *image = [UIImage imageNamed:@"2.jpg"];
+        cell.backIcon.image = [image blurImageWithBlur:0.3 exclusionPath:nil];
+        
+        [cell.infoView addSubview:label];
+        
+        CGRect frame = cell.infoView.frame;
+        frame.size.height = label.frame.origin.y + label.frame.size.height + 5;
+        cell.infoView.frame = frame;
+        
+        frame = cell.frame;
+        frame.size.height = cell.infoView.frame.origin.y + cell.infoView.frame.size.height;
+        cell.frame = frame;
+        
+        cellHeight = frame.size.height;
+        
+        [cell.btn1 addTarget:self action:@selector(backToFront:) forControlEvents:UIControlEventTouchUpInside];
+        
+        return cell;
+    }else{
+        static NSString *cellIdentifier = @"marks_cell";
+        MarkTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        
+        MarkData *mark = [data objectAtIndex:indexPath.row];
+        
+        cell.icon.image = mark.icon;
+        cell.name.text = mark.name;
+        cell.date.text = mark.date;
+        cell.words.text = mark.words;
+        cell.icon.layer.cornerRadius = 20;
+        cell.icon.layer.masksToBounds = YES;
+        
+        if(!cell)
+        {
+            @throw ([NSException exceptionWithName:@"CellIsNilException" reason:@"Cell is nil!" userInfo:nil]);
+        }
+        
+        return cell;
     }
-    
-    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section==0) {
+        //UITableViewCell *cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
+        return cellHeight;
+    }
+    return 80;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 45;
+    if (section==0) {
+        return 0;
+    }
+    return 30;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    if (section==0) {
+        return nil;
+    }
     TitleMarksOfClerk *header = [[[NSBundle mainBundle] loadNibNamed:@"MarksOfClerkNib" owner:self options:nil] objectAtIndex:0];
     
     if( header ) {

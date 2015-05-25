@@ -8,7 +8,7 @@
 
 #import "UICustomViewController.h"
 
-@interface MakeOrderViewController : UICustomViewController<UITableViewDataSource,UITableViewDelegate>
+@interface MakeOrderViewController : UICustomViewController<UITableViewDataSource,UITableViewDelegate,UIAlertViewDelegate,UIPickerViewDataSource,UIPickerViewDelegate>
 {
 
 }
@@ -27,5 +27,7 @@
 - (IBAction)onClickAdd:(id)sender;
 
 - (IBAction)onClickMinus:(id)sender;
+
+- (IBAction)onClickMakeOrder:(id)sender;
 
 @end

@@ -10,6 +10,7 @@
 #import "ClerkTableViewCell.h"
 #import "Clerk.h"
 #import "ClerkInfoViewController.h"
+#import "SearchKeywordViewController.h"
 
 @interface MainSceneViewController ()
 {
@@ -27,7 +28,7 @@
     
     data = [NSMutableArray arrayWithCapacity:0];
     [self makeDummy];
-    
+
 }
 
 - (void)makeDummy{
@@ -59,6 +60,15 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)onClickRightBtn:(id)sender{
+//    alert = [[AMSmoothAlertView alloc]initDropAlertWithTitle:@"注意" andText:@"阿萨德飞拉萨的阿里斯柯达" andCancelButton:YES forAlertType:AlertInfo];
+//    [alert setTitleFont:[UIFont fontWithName:@"Verdana" size:25.0f]];
+//    [alert show];
+    
+    SearchKeywordViewController *controller = [[SearchKeywordViewController alloc] init];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 #pragma mark -
